@@ -23,8 +23,8 @@ function allProducts() {
         for (i = 0; i < res.length; i++) {
             console.log(chalk.yellow(res[i].item_id), chalk.green(res[i].product_name), res[i].department_name, chalk.red(+ res[i].price));
         }
+        purchaseProduct(res);
     });
-    purchaseProduct();
 };
 
 function purchaseProduct() {
@@ -40,16 +40,22 @@ function purchaseProduct() {
         var query = "SELECT * FROM products WHERE item_ID=?";
         connection.query(query, [answer.product], function(err, res) {
             if (err) throw err;
-            if (res.stock_quantity >= parseInt(answer.quantity)) {
-                var cost = answer.quantity * res.price;
-                connection.query("UPDATE products SET ? WHERE ?", [{stock_quantity: (stock_quantity - answer.quantity)},{id: answer.product}], function(err) {
-                    if (err) throw err;
-                    console.log("Order Successful\nTotal cost: " + cost);
-                });
-            } else {
-                console.log("We're sorry. We don't have that many in stock.");
-            }
-            connection.end();
+            for (i = 0; i < res.length; i++) {
+                if (res[i].stock_quantity >= parseInt(answer.quantity)) {
+                    var query = "UPDATE products SET ? WHERE item_ID=?";
+                    // console.log(res);
+                    var cost = answer.quantity * res[i].price;
+                    // console.log(cost);
+                    var stock = res[i].stock_quantity - answer.quantity;
+                    // console.log(stock);
+                    connection.query(query, [{stock_quantity:stock},answer.product], function(err) {
+                        if (err) console.log(err);
+                        console.log("Order Successful\nTotal cost: " + cost);
+                    });
+                } else {
+                    console.log("We're sorry. We don't have that many in stock.");
+                }
+            }connection.end();
         })
     })
 };
