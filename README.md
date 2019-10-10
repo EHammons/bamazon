@@ -12,56 +12,45 @@
 * [Contact](#contact)
 
 ## General info
-Using Bandsintown, Spotify and OMBD, the user can chose from four options:
-* node liri.js concert-this "artist"
-* node liri.js spotify-this-song "song"
-* node liri.js movie-this "movie"
-* node liri.js do-what-it-says
-* Choices must be input with something in place of the quotes
-<br>    (ex: node liri.js movie-this Independence Day)
+Using MySQL, a customer can chose an item for sale and a quantity. This will adjust the stock of the item as well as let the customer know how much it will cost.
 
 ## Screenshots
-![concert-this](./img/concert-this.png)
-![spotify-this-song](./img/spotify-this-song.png)
-![movie-this](./img/movie-this.png)
-![do-what-it-says](./img/do-what-it-says.png)
+![Beginning](./img/Beginning.png)
+![FirstOrder](./img/FirstOrder.png)
+![NotEnoughStock](./img/NotEnoughStock.png)
 
 ## Technologies
-* Bands in Town Artist Events API
-* Spotify API
-* OMDB API
+* MySQL
 * JavaScript
 * Nodejs
 
 ## Setup
-npm install axios, fs, moment and node-spotify-api <br>
-A Spotify ID and Secret will be needed.
+npm install dotenv, mysql, inquirer and chalk <br>
+A MySQL password and database will be needed.
 
 ## Code Examples
-    switch(command) {
-        case "concert-this":
-            concert();
-            break;
-        case "spotify-this-song":
-            song();
-            break;
-        case "movie-this":
-            movie();
-            break;
-        case "do-what-it-says":
-            random();
-            break;
-        default:
-            console.log("Instructions");
-            break;
-    };
+    for (i = 0; i < res.length; i++) {
+        if (res[i].stock_quantity >= parseInt(answer.quantity)) {
+            var query = "UPDATE products SET stock_quantity=? WHERE item_ID=?";
+            // console.log(res);
+            var cost = answer.quantity * res[i].price;
+            // console.log(cost);
+            var stock = res[i].stock_quantity - answer.quantity;
+            // console.log(stock);
+            connection.query(query, [stock, answer.product], function(err) {
+                if (err) console.log(err);
+                console.log("Order Successful\nTotal cost: " + cost.toFixed(2));
+            });
+        } else {
+            console.log("We're sorry. We don't have that many in stock.");
+        }
+    }
 
 ## Features
 List of features ready and TODOs for future development
-* concert-this 'artist/band name' will return a list of 5 upcoming concerts with venue, location and date.
-* spotify-this-song 'song name' will return the artist(s), song name, a preview link from Spotify and the album the song is from.
-* movie-this 'movie name' will return the movie title, year released, IMDB and Rotten Tomatoes ratings, the country where the movie was produced, the language of the movie, plot and actors in the movie
-* do-what-it-says will use fs to return the command and choice from a separate text file.
+* Running the program will provide a list of items available.
+* Customer prompted to chose an item and a quantity.
+* If there is enough stock, the order will be complete and the total cost will be shown. The items are also deducted from current stock.
 
 ## Status
 Project is: _finished_

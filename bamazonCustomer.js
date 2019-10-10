@@ -42,15 +42,15 @@ function purchaseProduct() {
             if (err) throw err;
             for (i = 0; i < res.length; i++) {
                 if (res[i].stock_quantity >= parseInt(answer.quantity)) {
-                    var query = "UPDATE products SET ? WHERE item_ID=?";
+                    var query = "UPDATE products SET stock_quantity=? WHERE item_ID=?";
                     // console.log(res);
                     var cost = answer.quantity * res[i].price;
                     // console.log(cost);
                     var stock = res[i].stock_quantity - answer.quantity;
                     // console.log(stock);
-                    connection.query(query, [{stock_quantity:stock},answer.product], function(err) {
+                    connection.query(query, [stock, answer.product], function(err) {
                         if (err) console.log(err);
-                        console.log("Order Successful\nTotal cost: " + cost);
+                        console.log("Order Successful\nTotal cost: " + cost.toFixed(2));
                     });
                 } else {
                     console.log("We're sorry. We don't have that many in stock.");
